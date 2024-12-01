@@ -5,7 +5,7 @@ import budi from "../assets/Image/budi.svg";
 const Card = (props) => {
     const {children} = props;
     return (
-        <div className="border-2 rounded-[20px] bg-white max-w-[420px] max-h-[502px] text-[#003266] shadow-lg">
+        <div className="border-2 rounded-[20px] bg-white max-w-[420px] max-h-[1200px] text-[#003266] shadow-lg">
             <div className="p-[24px] gap-y-[12px] flex flex-col">
                 {children}
             </div>
@@ -34,11 +34,18 @@ const Kategori = (props) => {
 };
 
 const Image = (props) => {
-    const {image} = props;
-    return(
-        <img src={image} alt="" />
+    const { image } = props;
+    return (
+        <div className="w-full h-[200px] overflow-hidden rounded-t-[20px]">
+            <img
+                src={image}
+                alt=""
+                className="w-full h-full object-cover"
+            />
+        </div>
     );
 };
+
 
 const Tanggal = (props) => {
     const {children} = props;
@@ -51,15 +58,21 @@ const Tanggal = (props) => {
 };
 
 const Creator = (props) => {
-    const {image,nama,title} = props;
+    const { image, nama, title } = props;
     return (
-        <div className="flex gap-x-[16px]">
-                    <img src={image} alt="" />
-                    <div>
-                        <p className="font-medium text-[16px]">{nama}</p>
-                        <p className="font-normal text-[14px]">{title}</p>
-                    </div>
-                </div>
+        <div className="flex gap-x-[16px] items-center">
+            <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
+                <img
+                    src={image}
+                    alt={nama}
+                    className="w-full h-full object-cover"
+                />
+            </div>
+            <div>
+                <p className="font-medium text-[16px]">{nama}</p>
+                <p className="font-normal text-[14px]">{title}</p>
+            </div>
+        </div>
     );
 };
 
