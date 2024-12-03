@@ -78,7 +78,7 @@ const ProfilePagePersonalInfo = () => {
             </div>
             <div className="content flex flex-col sm:flex-row justify-between gap-8">
               <div className="profile flex flex-col lg:flex-row lg:items-start justify-center lg:justify-between lg:w-10/12 py-10">
-                <div className="profile-picture w-[120px] lg:w-2/12 mx-auto lg:mx-0 rounded-full">
+                <div className="profile-picture w-[120px] lg:w-2/12 mx-auto lg:mx-0 rounded-full z-10">
                   <img
                     src={user?.photo || Profile}
                     alt="Foto Profil"

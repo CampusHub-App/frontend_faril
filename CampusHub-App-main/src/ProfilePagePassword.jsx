@@ -12,20 +12,50 @@ import Navbar from "./components/Navbar";
 const ProfilePagePassword = () => {
   const [activePage, setActivePage] = useState("password");
   const [newPassword, setNewPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [Confirmation, setConfirmation] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmationError, setConfirmationError] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmationPassword, setShowConfirmationPassword] = useState(false);
-  const [profileImage, setProfileImage] = useState(Profile);  // Using a static profile image
+  const [profileImage, setProfileImage] = useState(Profile); 
   const [showDeletePopUp, setShowDeletePopUp] = useState(false);
   const [showLogoutPopUp, setShowLogoutPopUp] = useState(false);
-  const [showPopUp, setShowPopUp] = useState(false); // Control the display of pop-up after submit
+  const [showPopUp, setShowPopUp] = useState(false); 
   const [showAnimation, setShowAnimation] = useState(false);
 
 
+  const [email, setEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
+
   const handlePageChange = (page) => {
     setActivePage(page);
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("https://campushub.web.id/api/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password: loginPassword }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Login gagal. Cek email dan password.");
+      }
+
+      const data = await response.json();
+      setToken(data.token);
+      localStorage.setItem("token", data.token); 
+      alert("Login berhasil!");
+    } catch (error) {
+      setLoginError(error.message);
+    }
   };
 
   const handlePasswordChange = (e) => {
@@ -44,9 +74,12 @@ const ProfilePagePassword = () => {
     }
   };
 
+  
+
   const handleConfirmationChange = (e) => {
     const value = e.target.value;
-    setPasswordConfirmation(value);
+    console.log("Konfirmasi Password:", value); 
+    setConfirmation(value);
 
     if (value === "") {
       setConfirmationError("");
@@ -59,18 +92,67 @@ const ProfilePagePassword = () => {
 
   const isFormValid =
     newPassword &&
-    passwordConfirmation &&
+    Confirmation &&
     !passwordError &&
     !confirmationError;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setShowPopUp(true); // Show pop-up after submit
-  };
-
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+    
+      
+      console.log("Password Baru:", newPassword); 
+      console.log("Konfirmasi Password:", Confirmation); 
+    
+      if (!newPassword || !Confirmation) {
+        alert("Password dan konfirmasi password harus diisi.");
+        return;
+      }
+    
+      if (newPassword !== Confirmation) {
+        alert("Password dan konfirmasi password tidak cocok.");
+        return;
+      }
+    
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          alert("Anda harus login untuk melakukan perubahan.");
+          return;
+        }
+    
+        const response = await fetch("https://campushub.web.id/api/change-password", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            
+          },
+          body: JSON.stringify({
+            password: newPassword,
+            password_confirmation: Confirmation, 
+          }),
+        });
+    
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Error dari server:", errorData);
+          alert(errorData.message || "Terjadi kesalahan saat mengganti password.");
+          return;
+        }
+    
+        alert("Password berhasil diperbarui.");
+        resetFormFields();
+        setShowPopUp(true);
+      } catch (error) {
+        console.error("Error saat mengubah password:", error);
+        alert("Gagal mengganti password. Silakan coba lagi.");
+      }
+    };
+    
+    
   const resetFormFields = () => {
     setNewPassword("");
-    setPasswordConfirmation("");
+    setConfirmation("");
     setPasswordError("");
     setConfirmationError("");
   };
@@ -78,7 +160,7 @@ const ProfilePagePassword = () => {
 
   return (
     <div>
-      <Navbar/>
+       <Navbar/> 
     <div className="profile-page h-screen mx-4 sm:mx-10 md:mx-20 lg:mx-32">
       <div className={`container ${showAnimation ? "animate-slide-up" : ""}`}
       style={{
@@ -164,8 +246,8 @@ const ProfilePagePassword = () => {
                         <div className="flex py-2 w-full">
                           <input
                             type={showConfirmationPassword ? "text" : "password"}
-                            id="passwordconfirmation"
-                            value={passwordConfirmation}
+                            id="confirmation"
+                            value={Confirmation}
                             onChange={handleConfirmationChange}
                             placeholder="Konfirmasi Password Anda..."
                             className="p-3 border border-customBlue rounded-lg flex hover:shadow-lg transition duration-300 px-4 py-2 w-full focus:ring focus:ring-blue-200 focus:outline-none"
